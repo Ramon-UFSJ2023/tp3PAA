@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAXIMO_SIMBOLAS 256
+#define MAXIMO_SIMBOLOS 256
 #define TAMANHO_MAXIMO_COD 64
 
 typedef struct No{
@@ -15,7 +15,7 @@ typedef struct No{
 
 typedef struct FilaPrioridade{
     int tamanho;
-    No* dados[MAXIMO_SIMBOLAS];
+    No* dados[MAXIMO_SIMBOLOS];
 }FilaPrioridade;
 
 typedef struct codificado{
