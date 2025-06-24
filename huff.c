@@ -56,3 +56,90 @@ void filaDescer(filaPrioridade *fila,int indice){
     }
 
 }
+
+void insereFilaPrioridade(filaPrioridade *fila, NoHuff *noNovo){
+    if(fila->tamanho == fila->capacidade) return;
+    fila->elementos[fila->tamanho].noHuffMan = noNovo;
+    fila->tamanho++;
+    filaSubir(fila, (fila->tamanho-1));
+}
+
+NoHuff *menorFila(filaPrioridade *fila){
+    if(fila->tamanho == 0) return NULL;
+    NoHuff *menNo = fila->elementos[0].noHuffMan;
+    fila->elementos[0] = fila->elementos[fila->tamanho-1];
+    fila->tamanho--;
+    filaDescer(fila, 0);
+    return menNo;
+}
+
+NoHuff *criaNo(unsigned char caractere, int frequencia, NoHuff *esquerda, NoHuff *direita){
+    NoHuff *novoNo = (NoHuff*)malloc(sizeof(NoHuff));
+    if(novoNo == NULL) exit(1);
+    novoNo->caractere = caractere;
+    novoNo->direita = direita;
+    novoNo->esquerda = esquerda;
+    novoNo->frequencia = frequencia;
+    return novoNo;
+}
+
+void geraCod(NoHuff *no, char *caminho, int tamanhoCaminho, mapaCodigo *mapaCodSaida, int *indiceMapa){
+    if(no->esquerda == NULL && no->direita == NULL){
+        mapaCodSaida[*indiceMapa].caractere = no->caractere;
+        mapaCodSaida[*indiceMapa].codigo = (char*)malloc(tamanhoCaminho+1);
+        if(mapaCodSaida[*indiceMapa].codigo == NULL) exit(1);
+        strncpy(mapaCodSaida[*indiceMapa].codigo, caminho, tamanhoCaminho);
+        mapaCodSaida[*indiceMapa].codigo[tamanhoCaminho] = '\0';
+        mapaCodSaida[*indiceMapa].tamanhoCodigo = tamanhoCaminho;
+        (*indiceMapa)++;
+        return;
+    }
+    if(no->esquerda){
+        caminho[tamanhoCaminho] = '0';
+        geraCod(no->esquerda, caminho, tamanhoCaminho+1, mapaCodSaida, indiceMapa);
+    }
+    if(no->direita){
+        caminho[tamanhoCaminho] = '1';
+        geraCod(no->direita, caminho, tamanhoCaminho+1, mapaCodSaida, indiceMapa);
+    }
+}
+
+void costruirHuffGeraCodigo(const unsigned char *textoEntrada, size_t tamanhoArqTexto, NoHuff **raizArvore, mapaCodigo ** mapaCod, int *numCaracteresUnicos){
+    int frequencias[MAX_CARACTERES] = {0};
+    for(size_t i=0; i<tamanhoArqTexto;i++) frequencias[textoEntrada[i]]++;
+
+    filaPrioridade *fila = CriaFila(MAX_CARACTERES);
+    *numCaracteresUnicos = 0;
+
+    for(int i=0;i<MAX_CARACTERES;i++){
+        if(frequencias[i]>0){
+            insereFilaPrioridade(fila, criaNo((unsigned char)i, frequencias[i], NULL, NULL));
+            (*numCaracteresUnicos)++;
+        }
+    }
+    while(fila->tamanho >1){
+        NoHuff *esquerda = menorFila(fila);
+        NoHuff *diretira = menorFila(fila);
+        NoHuff *pai = criaNo('\0', esquerda->frequencia+diretira->frequencia, esquerda, diretira);
+        insereFilaPrioridade(fila, pai);
+    }
+    *raizArvore = menorFila(fila);
+    free(fila->elementos);
+    free(fila);
+
+    *mapaCod = (mapaCodigo*)malloc(*numCaracteresUnicos * sizeof(mapaCod));
+    if(*mapaCod == NULL) exit(1);
+
+    char caminho[MAX_CODIGO_BITS];
+    int indiceMapaCodigo = 0;
+    geraCod(*raizArvore, caminho, 0, *mapaCod, &indiceMapaCodigo);
+}
+
+static const mapaCodigo *encontraCod(unsigned char caractere, const mapaCodigo *mapaCod, int numeroCaracteresUnicos){
+    for(int i=0; i<numeroCaracteresUnicos; i++){
+        if(mapaCod[i].caractere == caractere){
+            return &mapaCod[i];
+        }
+    }
+    return NULL;
+}
