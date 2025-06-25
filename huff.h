@@ -5,8 +5,8 @@
 typedef struct NoHuff{
    unsigned char caractere;
    int frequencia;
-   struct No *esquerda;
-   struct No *direita;
+   struct NoHuff *esquerda;
+   struct NoHuff *direita;
 }NoHuff;
 
 typedef struct mapaCodigo{

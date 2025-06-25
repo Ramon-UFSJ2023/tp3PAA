@@ -127,7 +127,7 @@ void costruirHuffGeraCodigo(const unsigned char *textoEntrada, size_t tamanhoArq
     free(fila->elementos);
     free(fila);
 
-    *mapaCod = (mapaCodigo*)malloc(*numCaracteresUnicos * sizeof(mapaCod));
+    *mapaCod = (mapaCodigo*)malloc(*numCaracteresUnicos * sizeof(mapaCodigo));
     if(*mapaCod == NULL) exit(1);
 
     char caminho[MAX_CODIGO_BITS];
@@ -143,3 +143,36 @@ static const mapaCodigo *encontraCod(unsigned char caractere, const mapaCodigo *
     }
     return NULL;
 }
+
+int comprimirTexto(const unsigned char *arqTexto, size_t tamanhoArqTexto, const mapaCodigo *mapaCod, int numeroCaracteresUnicos, unsigned char **dadosComprimidos, size_t *tamDadosCompriBytes, size_t *totalBitsCompri){
+    size_t bitsAcumulados =0;
+    for(size_t i=0; i< tamanhoArqTexto;i++){
+        const mapaCodigo *entrada = encontraCod(arqTexto[i], mapaCod, numeroCaracteresUnicos);
+        if(entrada == NULL) return -1;
+        bitsAcumulados += entrada->tamanhoCodigo;
+    }
+    *totalBitsCompri = bitsAcumulados;
+
+    *tamDadosCompriBytes = (bitsAcumulados+CHAR_BIT-1)/ CHAR_BIT;
+    *dadosComprimidos = (unsigned char*)calloc(1, *tamDadosCompriBytes);
+    if(*dadosComprimidos == NULL) return -1;
+
+    size_t indiceByteAtual = 0;
+    int offsetBitAtual = 0;
+    for(size_t i=0; i< tamanhoArqTexto;i++){
+        const mapaCodigo *entrada = encontraCod(arqTexto[i], mapaCod, numeroCaracteresUnicos);
+        for(int j=0; j<entrada->tamanhoCodigo;j++){
+            int bit = (entrada->codigo[j] == '1');
+            if(bit) (*dadosComprimidos)[indiceByteAtual] |= (1 << (CHAR_BIT-1 - offsetBitAtual));
+
+            offsetBitAtual++;
+            if(offsetBitAtual == CHAR_BIT){
+                offsetBitAtual =0;
+                indiceByteAtual++;
+            }
+        }
+    }
+    return 0;
+}
+
+
