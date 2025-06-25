@@ -1,6 +1,10 @@
 #ifndef HUFF_H
 #define HUFF_H
 #include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <limits.h>
 
 typedef struct NoHuff{
    unsigned char caractere;

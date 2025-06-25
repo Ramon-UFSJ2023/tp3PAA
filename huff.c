@@ -1,8 +1,4 @@
 #include "huff.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <limits.h>
 
 #define MAX_CARACTERES 256
 #define MAX_CODIGO_BITS (MAX_CARACTERES * CHAR_BIT)
@@ -174,5 +170,55 @@ int comprimirTexto(const unsigned char *arqTexto, size_t tamanhoArqTexto, const 
     }
     return 0;
 }
+
+int huffmanComprimirPadrao(const unsigned char *arqPadrao,size_t tamanhoPadrao,const mapaCodigo *mapaCod,int numCaracteresUnicos,unsigned char **padraoComprimido,size_t *tamanhoPadraoCompriBits){
+    size_t bitsAcumuladosPadrao =0;
+
+    for(size_t i=0; i< tamanhoPadrao;i++){
+        const mapaCodigo *entrada = encontraCod(arqPadrao[i], mapaCod, numCaracteresUnicos);
+        if(entrada == NULL) return -1;
+        bitsAcumuladosPadrao += entrada->tamanhoCodigo;
+    }
+    *tamanhoPadraoCompriBits = bitsAcumuladosPadrao;
+
+    size_t tamanhoBytesPadraoComprimido = (bitsAcumuladosPadrao+CHAR_BIT-1)/CHAR_BIT;
+    *padraoComprimido = (unsigned char *)calloc(1,tamanhoBytesPadraoComprimido);
+    if(*padraoComprimido == NULL) return -1;
+    size_t indiceByteAtual = 0;
+    int offsetBitAtual = 0;
+
+    for(size_t i=0; i<tamanhoPadrao;i++){
+        const mapaCodigo *entrada = encontraCod(arqPadrao[i], mapaCod, numCaracteresUnicos);
+        for(int j=0; j<entrada->tamanhoCodigo;j++){
+            int bit = (entrada->codigo[j] == '1');
+            if(bit) (*padraoComprimido)[indiceByteAtual] |= (1 << (CHAR_BIT-1-offsetBitAtual));
+            offsetBitAtual++;
+            if(offsetBitAtual == CHAR_BIT){
+                offsetBitAtual=0;
+                indiceByteAtual++;
+            }
+        }
+    }
+    return 0;
+}
+
+void huffLiberarArvore(NoHuff *raiz){
+    if(raiz == NULL) return;
+    huffLiberarArvore(raiz->esquerda);
+    huffLiberarArvore(raiz->direita);
+    free(raiz);
+}
+
+void huffLiberarMapa(mapaCodigo **mapaCod, int numeroCaracteresUni){
+    if(mapaCod == NULL || *mapaCod == NULL) return;
+    mapaCodigo *mapa = *mapaCod;
+
+    for(int i=0; i<numeroCaracteresUni;i++) {
+        if(mapa[i].codigo != NULL) free(mapa[i].codigo);
+    }
+    free(mapa);
+}
+
+
 
 
