@@ -98,7 +98,7 @@ int main(int argc, char *argv[]){
         unsigned char *padraoCmp = NULL;
         size_t tamanhoPadraoCmp = 0;
 
-        int resultadoCmpPadrao = huffmanComprimirPadrao(padraoAtual, tamanhoPadraoAtual, mapaCodHuff, numCaracteresUnicos, &padraoCmp, &tamanhoPadraoCmp);
+        int resultadoCmpPadrao = huffComprimirPadrao(padraoAtual, tamanhoPadraoAtual, mapaCodHuff, numCaracteresUnicos, &padraoCmp, &tamanhoPadraoCmp);
         if(resultadoCmpPadrao != 0){
             fprintf(stderr, "Erro ao comprimir padrao.");
             if(padraoCmp) free(padraoCmp);

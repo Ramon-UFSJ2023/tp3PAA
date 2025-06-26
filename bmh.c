@@ -41,24 +41,25 @@ int bmhBuscaNaoComprimido(const unsigned char *texto, size_t tamanhoTexto, const
 }
 
 int bmhLerBits(const unsigned char *buffer, size_t bitOffSet, size_t numBits, unsigned long long *bitsLidos){
-    if(numBits >sizeof(unsigned long long)*CHAR_BIT || numBits ==0) return -1;
+    if(numBits > sizeof(unsigned long long)*CHAR_BIT || numBits ==0) return -1;
     *bitsLidos = 0;
-    size_t bytesLidos = 0;
+    // size_t bytesLidos = 0; // Removido: variável não utilizada
     size_t bitsRestante = numBits;
     size_t byteInicial = bitOffSet/CHAR_BIT;
     int offsetByte = bitOffSet%CHAR_BIT;
 
     unsigned char primeiroByte = buffer[byteInicial];
-    size_t bitsPrimByte = (CHAR_BIT - offsetByte >numBits)? numBits : (CHAR_BIT-offsetByte);
+    // Correção: Casts explicitos para size_t para resolver warnings de signed/unsigned
+    size_t bitsPrimByte = ((size_t)CHAR_BIT - (size_t)offsetByte > numBits) ? numBits : ((size_t)CHAR_BIT - (size_t)offsetByte);
     unsigned char mascara = ((1 << bitsPrimByte) -1);
-    mascara <<= (CHAR_BIT -offsetByte -bitsPrimByte);
-    *bitsLidos = (primeiroByte & mascara) >> (CHAR_BIT-offsetByte-bitsPrimByte);
+    mascara <<= ((size_t)CHAR_BIT -(size_t)offsetByte -bitsPrimByte); // Correção: Casts explicitos
+    *bitsLidos = (primeiroByte & mascara) >> ((size_t)CHAR_BIT-(size_t)offsetByte-bitsPrimByte); // Correção: Casts explicitos
     bitsRestante -= bitsPrimByte;
 
     if(bitsRestante>0){
         byteInicial++;
         unsigned char proxByte = buffer[byteInicial];
-        *bitsLidos = (*bitsLidos << bitsRestante) | (proxByte >> (CHAR_BIT -bitsRestante));
+        *bitsLidos = (*bitsLidos << bitsRestante) | (proxByte >> ((size_t)CHAR_BIT -bitsRestante)); // Correção: Casts explicitos
     }
     return 0;
 }
@@ -100,7 +101,6 @@ int bmhBuscaComprimido(const unsigned char *textoComprimido, size_t tamanhoTexto
         }
         if(!match){
             size_t posiOriginalCaractere = 0;
-            size_t bitsPercorridos = 0;
             const NoHuff *tempNo = raizHuff;
 
             size_t bitAtualPos = 0;
