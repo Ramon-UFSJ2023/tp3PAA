@@ -90,7 +90,7 @@ int main(int argc, char *argv[]){
         numOco = bmhBuscaNaoComprimido(textoOriginal, tamanhoArqTexto, padraoAtual, tamanhoPadraoAtual, &numCmpNaoCompri, &tempoExeNCmp, ocoEncontrada, MAX_OCORRENCIAS);
         for(int i=0; i<numOco;i++){
             printf("%zu ", ocoEncontrada[i]);
-        }printf("\n Comparacoes: %lld, Tempo: %.5fs\n", numCmpNaoCompri, tempoExeNCmp);
+        }printf("\n Comparacoes: %lld, Tempo: %.6fs\n", numCmpNaoCompri, tempoExeNCmp);
 
 
         //texto comprimido:
@@ -112,7 +112,7 @@ int main(int argc, char *argv[]){
             for(int i=0; i<numOco;i++){
                 printf("%zu ", ocoEncontrada[i]);
             }
-            printf("\n Comparacoes: %lld, Tempo: %.5fs\n", numCmpCompri, tempoExeCompri);
+            printf("\n Comparacoes: %lld, Tempo: %.6fs\n", numCmpCompri, tempoExeCompri);
         }
         if(padraoCmp){
             free(padraoCmp);

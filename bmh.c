@@ -85,7 +85,7 @@ int bmhBuscaComprimido(const unsigned char *textoComprimido, size_t tamanhoTexto
                 match = true;
                 break;
             }
-            if((i+j) >+tamanhoTextoComprimido){
+            if((i+j) >tamanhoTextoComprimido){
                 match = true;
                 break;
             }

@@ -1,0 +1,10 @@
+palavras 25 35 
+ Comparacoes: 23, Tempo: 0.00000s
+palavras (Busca Comprimida)25 35 
+ Comparacoes: 386, Tempo: 0.00001s
+
+exemplo 6 
+ Comparacoes: 17, Tempo: 0.00000s
+exemplo (Busca Comprimida)6 
+ Comparacoes: 453, Tempo: 0.00001s
+
