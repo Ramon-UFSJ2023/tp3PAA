@@ -30,7 +30,7 @@ int main(int argc, char *argv[]){
 
     NoHuff *raizArvoreHuff = NULL;
     mapaCodigo *mapaCodHuff = NULL;
-    int numCaracteresUnicos = NULL;
+    int numCaracteresUnicos = 0;
 
     unsigned char *textoComprimido = NULL;
     size_t tamTextoComprimidoByts = 0;
@@ -116,7 +116,7 @@ int main(int argc, char *argv[]){
         }
         if(padraoCmp){
             free(padraoCmp);
-            padraoCmp == NULL;
+            padraoCmp = NULL;
         }
         printf("\n");
     }
