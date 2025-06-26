@@ -5,7 +5,7 @@ static void preProcessarBmh(const unsigned char *padrao, size_t tamanhoPadrao, i
     for(size_t i=0; i<tamanhoPadrao-1;i++) tabelaDesloc[padrao[i]] = tamanhoPadrao-1-i;
 }
 
-int bmhBuscaNaoComprimido(const unsigned char *texto, size_t tamanhoTexto, const unsigned *padrao, size_t tamanhoPadrao, long long *numeroComparacoes, double *tempoExecução, size_t *ocorrenciasEncontradas, size_t maximoOcorrencias){
+int bmhBuscaNaoComprimido(const unsigned char *texto, size_t tamanhoTexto, const unsigned char *padrao, size_t tamanhoPadrao, long long *numeroComparacoes, double *tempoExecução, size_t *ocorrenciasEncontradas, size_t maximoOcorrencias){
     clock_t IniTempo = clock();
     *numeroComparacoes = 0;
     int numOco = 0;
@@ -30,7 +30,7 @@ int bmhBuscaNaoComprimido(const unsigned char *texto, size_t tamanhoTexto, const
         if(j<0){
             if(ocoInd <maximoOcorrencias)ocorrenciasEncontradas[ocoInd++] = i;
             numOco++;
-            i += (tabDesloc[padrao[tamanhoPadrao-1]] > 1) ? tabDesloc[padrao[tamanhoPadrao]] : 1;
+            i += (tabDesloc[padrao[tamanhoPadrao-1]] > 1) ? tabDesloc[padrao[tamanhoPadrao-1]] : 1;
 
         }else{
             i+= tabDesloc[texto[i+tamanhoPadrao-1]];
@@ -63,7 +63,7 @@ int bmhLerBits(const unsigned char *buffer, size_t bitOffSet, size_t numBits, un
     return 0;
 }
 
-int bmhBuscaComprimido(const unsigned char *textoComprimido, size_t tamanhoTextoComprimido, const unsigned *padraoComprimido, size_t tamanhoPadraoCmp, long long *numCmp, double *tempExecucao, size_t *ocorrenciasEncontradas, size_t maximoOcorrencias, const NoHuff *raizHuff){
+int bmhBuscaComprimido(const unsigned char *textoComprimido, size_t tamanhoTextoComprimido, const unsigned char *padraoComprimido, size_t tamanhoPadraoCmp, long long *numCmp, double *tempExecucao, size_t *ocorrenciasEncontradas, size_t maximoOcorrencias, const NoHuff *raizHuff){
     clock_t iniTempo = clock();
     *numCmp = 0;
     int numOco = 0;
@@ -81,15 +81,20 @@ int bmhBuscaComprimido(const unsigned char *textoComprimido, size_t tamanhoTexto
             unsigned long long bitPadrao, bitTexto;
             if(bmhLerBits(padraoComprimido,j,1,&bitPadrao) != 0){
                 fprintf(stderr,"Erro de leitura do bit do padrao comprimido.\n");
-                *tempExecucao =(double)(clock()-iniTempo)/CLOCKS_PER_SEC;
-                return -1;
+                match = true;
+                break;
             }
-            if(bmhLerBits(textoComprimido,i+j,1,&bitTexto) != 0){
+            if((i+j) >+tamanhoTextoComprimido){
+                match = true;
+                break;
+            }
+            if(bmhLerBits(textoComprimido,i+j,1,&bitTexto) !=0){
+                fprintf(stderr,"Erro de leitura do bit do texto comprimido.\n");
                 match = true;
                 break;
             }
             if(bitPadrao != bitTexto){
-                match = true;
+                match =true;
                 break;
             }
         }
