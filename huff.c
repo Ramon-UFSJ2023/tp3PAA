@@ -171,7 +171,7 @@ int comprimirTexto(const unsigned char *arqTexto, size_t tamanhoArqTexto, const 
     return 0;
 }
 
-int huffmanComprimirPadrao(const unsigned char *arqPadrao,size_t tamanhoPadrao,const mapaCodigo *mapaCod,int numCaracteresUnicos,unsigned char **padraoComprimido,size_t *tamanhoPadraoCompriBits){
+int huffComprimirPadrao(const unsigned char *arqPadrao,size_t tamanhoPadrao,const mapaCodigo *mapaCod,int numCaracteresUnicos,unsigned char **padraoComprimido,size_t *tamanhoPadraoCompriBits){
     size_t bitsAcumuladosPadrao =0;
 
     for(size_t i=0; i< tamanhoPadrao;i++){
